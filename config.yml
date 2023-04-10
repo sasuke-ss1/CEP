@@ -1,0 +1,13 @@
+batchSize: 32
+Epochs: 200
+lr: 0.0001
+decay: 20
+gamma: 0.5
+trainDir: "./UIE-dataset/UIEBD/train/image"
+labelTrainDir: "./UIE-dataset/UIEBD/train/image"
+valDir: "./UIE-dataset/UIEBD/test/image"
+labelValDir: "./UIE-dataset/UIEBD/test/image"
+patchSize: 128
+saveFolder: "./weights/"
+outputFolder: "./results/"
+testFreq: 20
