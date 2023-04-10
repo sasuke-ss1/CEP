@@ -11,6 +11,7 @@ from utils import *
 from torch.optim.lr_scheduler import MultiStepLR
 from dataset import Data, Val
 from torchvision import transforms
+import sys
 
 parser = ArgumentParser()
 parser.add_argument("--configPath", "-p", default="./config.yml", type=str)
@@ -35,7 +36,7 @@ transform = transforms.Compose([transforms.ToTensor()])
 trainData = Data(config["trainDir"], config["labelTrainDir"], config["patchSize"], transform=transform)
 trainLoader = DataLoader(trainData, batch_size=config["batchSize"], shuffle=True)
 valData = Val(config["valDir"], config["labelValDir"], transform=transform)
-valLoader = DataLoader(valData,batch_size=config["batchSize"])
+valLoader = DataLoader(valData)
 
 def train():    
     for epoch in range(1, config["Epochs"] + 1):
@@ -46,16 +47,19 @@ def train():
             loop_obj.set_description(f"Epoch: {epoch}")
             input, label = batch[0].cuda(), batch[1].cuda
 
-            j, t = model(input)
+            j, d, betas = model(input)
             a = get_A(input).cuda()
 
+            rgb = [torch.exp(-d*betas[..., i].view(-1, 1, 1, 1)) for i in range(betas.shape[1])]
+            t = torch.cat(rgb, dim=1)
+            
             IRec = j * t + (1 - t) * a
             loss_1 = mse_loss(IRec, input)
 
             lam = np.random.beta(1, 1)
             input_mix = lam * input + (1 - lam) * j
 
-            jMix, tMix = model(input_mix)
+            jMix, dMix, beta_mix = model(input_mix)
             loss_2 = mse_loss(jMix, j.detach())
 
             loss_3 = gray_loss(j)
@@ -80,20 +84,26 @@ def train():
             for batch in tqdm(valLoader):
                 input, label, name = batch[0].cuda(), batch[1], batch[2]
                 with torch.no_grad():
-                    j_out, t_out = model(input)
+                    j_out, d_out, betas = model(input)
                     a_out = get_A(input).cuda()
+
+                    rgb_out = [torch.exp(-d_out*betas[..., i].view(-1, 1, 1, 1)) for i in range(betas.shape[1])]
+                    t_out = torch.cat(rgb_out, dim=1)
 
                     if not os.path.exists(config["outputFolder"]):
                         os.mkdir(config["outputFolder"])
                         os.mkdir(config["outputFolder"] + 'J/')
                         os.mkdir(config["outputFolder"] + 'A/')
                         os.mkdir(config["outputFolder"] + 'T/')
+                        os.mkdir(config["outputFolder"] + "D/")
                     j_out_np = np.clip(torch2np(j_out), 0, 1)
                     t_out_np = np.clip(torch2np(t_out), 0, 1)
+                    d_out_np = np.clip(torch2np(d_out), 0, 1)
                     a_out_np = np.clip(torch2np(a_out), 0, 1)
                     save_img(name[0], j_out_np, config["outputFolder"] + 'J/')
                     save_img(name[0], t_out_np, config["outputFolder"] + 'T/')
                     save_img(name[0], a_out_np, config["outputFolder"] + 'A/')
+                    save_img(name[0], d_out_np, config["outputFolder"] + 'D/')
             torch.set_grad_enabled(True)
 
 
