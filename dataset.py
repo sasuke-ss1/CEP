@@ -81,3 +81,29 @@ class Val(Dataset):
 
     def __len__(self):
         return len(self.label_filenames)
+    
+class StereoData(Dataset):
+    def __init__(self, root, transforms=None):
+        super().__init__()
+
+        self.left = os.path.join(root, "left")
+        self.right = os.path.join(root, "right")
+        self.leftImagePath = list(map(lambda x: os.path.join(self.left, x), sorted(os.listdir(self.left))))
+        self.rightImagePath = list(map(lambda x: os.path.join(self.right, x), sorted(os.listdir(self.right))))
+
+        self.transform = transforms
+
+    def __getitem__(self, idx):
+        imgL = Image.open(self.leftImagePath[idx])
+        imgR = Image.open(self.rightImagePath[idx])
+
+        if self.transform:
+            imgL, imgR = self.transform(imgL), self.transform(imgR)
+
+        return imgL, imgR
+
+    def __len__(self):
+        return len(self.leftImagePath)
+    
+
+

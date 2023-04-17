@@ -26,17 +26,19 @@ import torch
 
 
 
-model = Net()
-model.load_state_dict(torch.load("weights/epoch_200.pth"))
+#model = Net()
+#model.load_state_dict(torch.load("weights/epoch_200.pth"))
+#
+#
+#img = np.transpose(cv2.imread("/home/intern/ss_sasuke/CEP/UIE-dataset/UIEBD/train/image/237.jpg"), (2, 0, 1))
+#img = torch.from_numpy(img)
+#j, t = model(img)
+#
+#j, t = np2pil(torch2np(j)), np2pil(torch2np(t))
+#
+#j.save("./123.png")
+#t.save("./123.png")
 
 
-img = np.transpose(cv2.imread("/home/intern/ss_sasuke/CEP/UIE-dataset/UIEBD/train/image/237.jpg"), (2, 0, 1))
-img = torch.from_numpy(img)
-j, t = model(img)
-
-j, t = np2pil(torch2np(j)), np2pil(torch2np(t))
-
-j.save("./123.png")
-t.save("./123.png")
 
 
