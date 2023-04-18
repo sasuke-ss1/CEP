@@ -3,9 +3,9 @@ Epochs: 200
 lr: 0.001
 decay: 20
 gamma: 0.5
-trainDir: "./UIE-dataset/UIEBD/train/image"
+trainDir: "DROPUWStereo_HIMB_Data"
 labelTrainDir: "./UIE-dataset/UIEBD/train/image"
-valDir: "./UIE-dataset/UIEBD/test/image"
+valDir: "DROPUWStereo_HIMB_Data"
 labelValDir: "./UIE-dataset/UIEBD/test/image"
 patchSize: 128
 saveFolder: "./weights/"

@@ -2,7 +2,10 @@ import os
 from torch.utils.data import Dataset
 from PIL import Image, ImageOps
 import random
-
+import torchvision.transforms.functional as TF
+from torchvision.transforms import RandomCrop
+import matplotlib.pyplot as plt
+import torchvision.transforms as transforms
 
 def get_patch(img_in, img_tar, patch_size, scale=1, ix=-1, iy=-1):
     (ih, iw) = img_in.size
@@ -83,27 +86,39 @@ class Val(Dataset):
         return len(self.label_filenames)
     
 class StereoData(Dataset):
-    def __init__(self, root, transforms=None):
+    def __init__(self, root, patch_size=None, val=False, transform=None):
         super().__init__()
+        
+        root = os.path.join(root, "val" if val else "train")
+        self.val = val
 
         self.left = os.path.join(root, "left")
         self.right = os.path.join(root, "right")
         self.leftImagePath = list(map(lambda x: os.path.join(self.left, x), sorted(os.listdir(self.left))))
         self.rightImagePath = list(map(lambda x: os.path.join(self.right, x), sorted(os.listdir(self.right))))
 
-        self.transform = transforms
+        self.patch_size = patch_size
+        self.transform = transform
 
     def __getitem__(self, idx):
         imgL = Image.open(self.leftImagePath[idx])
         imgR = Image.open(self.rightImagePath[idx])
 
+        if not self.val:
+            imgL, imgR, _ =  get_patch(imgL, imgR, self.patch_size)
+
         if self.transform:
             imgL, imgR = self.transform(imgL), self.transform(imgR)
+
+        if self.val:
+            return imgL, imgR, self.leftImagePath[idx].split("/")[-1]
 
         return imgL, imgR
 
     def __len__(self):
         return len(self.leftImagePath)
     
-
-
+if __name__ == "__main__":
+    transform = transforms.Compose([transforms.ToTensor()])
+    imgL, imgR = StereoData("DROPUWStereo_HIMB_Data", 128, transform=transform)[0]
+    print(imgL.shape, imgR.shape)

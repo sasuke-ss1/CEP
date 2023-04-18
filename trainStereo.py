@@ -12,7 +12,6 @@ from torch.optim.lr_scheduler import MultiStepLR
 from dataset import StereoData
 from torchvision import transforms
 import sys
-from torch.utils.data import random_split
 
 parser = ArgumentParser()
 parser.add_argument("--configPath", "-p", default="./config.yml", type=str)
@@ -32,12 +31,12 @@ optimizer = Adam(model.parameters(), lr=config["lr"])
 ckpt = [i for i in range(1, config["Epochs"] + 1) if i%config["decay"] == 0]
 scheduler = MultiStepLR(optimizer, ckpt, config["gamma"])
 
-transform = transforms.Compose([transforms.ToTensor(), transforms.Resize(128, 128)])
+transform = transforms.Compose([transforms.ToTensor()])
 
-Data = StereoData(config["trainDir"], transform=transform)
-trainSplit = int(0.8*len(Data));valSplit = len(Data)-trainSplit
-trainData, valData = random_split(Data, [trainSplit, valSplit])
+
+trainData = StereoData(config["trainDir"], config["patchSize"], transform=transform)
 trainLoader = DataLoader(trainData, batch_size=config["batchSize"], shuffle=True)
+valData = StereoData(config["valDir"] , val=True,transform=transform)
 valLoader = DataLoader(valData)
 
 def train():    
@@ -47,8 +46,7 @@ def train():
         loop_obj = tqdm(trainLoader)
         for batch in loop_obj:
             loop_obj.set_description(f"Epoch: {epoch}")
-            imgL, imgR = batch[0].cuda(), batch[1].cuda
-
+            imgL, imgR = batch[0].cuda(), batch[1].cuda()
             j, d, betas = model(imgL)
             a = get_A(imgL).cuda()
 
@@ -88,10 +86,10 @@ def train():
             torch.set_grad_enabled(False)
             model.eval()
             for batch in tqdm(valLoader):
-                input, label, name = batch[0].cuda(), batch[1], batch[2]
+                imgL, imgR, name = batch[0].cuda(), batch[1], batch[2]
                 with torch.no_grad():
-                    j_out, d_out, betas = model(input)
-                    a_out = get_A(input).cuda()
+                    j_out, d_out, betas = model(imgL)
+                    a_out = get_A(imgL).cuda()
 
                     rgb_out = [torch.exp(-d_out*betas[..., i].view(-1, 1, 1, 1)) for i in range(betas.shape[1])]
                     t_out = torch.cat(rgb_out, dim=1)

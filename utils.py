@@ -42,7 +42,7 @@ def get_A(x):
     
     return A.unsqueeze(0)
 
-def apply_disparity(self, img:torch.Tensor, disp:torch.Tensor):
+def apply_disparity(img:torch.Tensor, disp:torch.Tensor):
         batch_size, _, height, width = img.size()
 
         # Original coordinates of pixels
