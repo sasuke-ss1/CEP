@@ -5,7 +5,7 @@ import torch.nn as nn
 class Test(nn.Module):
     def __init__(self, out=64):
         super().__init__()
-        sizes= [3, out, out, out, out, 1] 
+        sizes= [3, out, out, out, out, 3] 
         layers =[]
         for i in range(4):
             layers.append(RefConvInsact(sizes[i], sizes[i+1], 3, 1, 0))
@@ -15,14 +15,14 @@ class Test(nn.Module):
 
         self.net = nn.Sequential(*layers)
         self.depth = nn.Sequential(*layers1)
-        self.betas = nn.Sequential(*layers2)
+        #self.betas = nn.Sequential(*layers2)
 
     def forward(self, x):
         out = self.net(x)
         depth = self.depth(out)
-        betas = self.betas(out)
+        #betas = self.betas(out)
 
-        return depth, betas
+        return depth#, betas
 
 
 class Jest(nn.Module):
