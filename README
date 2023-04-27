@@ -1,0 +1,78 @@
+   ***************************************************************
+   **          Università  degli Studi di Parma (Italy)         **
+   **       Dipartimento di Ingegneria dell'Informazione        **
+   **   RIMLab - Robotics and Intelligent Machines Laboratory   **
+   **              [http://rimlab.ce.unipr.it]                  **
+   ***************************************************************
+   ** caselli, aleotti, dlr, kallasi, oleari [@ce.unipr.it]     **
+   ***************************************************************
+
+
+______DESCRIPTION______________________________________________________________________
+
+This underwater dataset has been taken near Portofino (Italy) on September 6th, 2014.
+The dataset comprises image sequences of both single and multiple pipes with different colors and radii ranging from 5 to 6 cm. 
+The depth was approximately 10 m and the dataset was acquired at 15 frames per second.
+The dataset include 9600 stereo images in Bayer encoded format (1292x964 resolution), the original in-air camera calibration parameters, and the ones obtained after calibration with the method described in [oleari15system] (.yaml files).
+
+The dataset is splitted in 3 separate archives in order to facilitate the download. 
+Each archive is stand alone and contains a full set of images and calibration files.
+
+
+
+______CONTENT__________________________________________________________________________
+
+The dataset consists of the following directories:
+
+-> CALIB: it contains two calibration sets of files for left and right cameras, for in-air calibration (ORIG_) and after the post-processing method (MOD_) described in [oleari15system].
+          The YAML files are consistent with the OpenCV library format (see http://docs.opencv.org/modules/core/doc/xml_yaml_persistence.html)
+    CALIB/ORIG_camera_info_left.yaml
+    CALIB/ORIG_camera_info_right.yaml
+    CALIB/MOD_camera_info_left.yaml
+    CALIB/MOD_camera_info_right.yaml
+-> IMGS: this directory contains pairs of images organized in three sets
+    IMGS/set1
+    IMGS/set2
+    IMGS/set3
+
+
+
+______REFERENCES_______________________________________________________________________
+
+When using this dataset in your research, we will be happy if you cite us:
+
+@inproceedings{oleari15system,
+  author = {Oleari, F. and Kallasi, F. and Lodi Rizzini, D. and Aleotti, J. and Caselli, S.},
+  title = {An Underwater Stereo Vision System: from Design to Deployment and Dataset Acquisition},
+  booktitle = OCEANS,
+  pages = {1-5},
+  year = {2015},
+}
+
+@inproceedings{kallasi15graph,
+  author = {Kallasi, F. and Lodi Rizzini, D. and Oleari, F. and Aleotti, J.},
+  title = {Computer Vision in Underwater Environments: a Multiscale Graph Segmentation Approach},
+  booktitle = OCEANS,
+  pages = {1-6},
+  year = {2015},
+}
+
+@article{lodirizzini15,
+  author = {Lodi Rizzini, D. and Kallasi, F. and Oleari, F. and Caselli, S.},
+  title = {Investigation of Vision-based Underwater Object Detection with Multiple Datasets},
+  journal = IJARS,
+  volume = {-},
+  number = {-},
+  pages = {-},
+  month = {may},
+  year = {2015},
+  publisher = {InTech},
+}
+
+
+
+______ACKNOWLEDGMENT___________________________________________________________________
+
+The system has been developed within the Italian national Project MARIS.
+The authors would like to thank the divers of Federazione Italiana Attività Subacquee of Parma (FIAS, http://www.fiasparma.it/) for their valuable support in setting up the underwater image acquisition experiment.
+

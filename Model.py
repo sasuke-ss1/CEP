@@ -9,21 +9,26 @@ class Test(nn.Module):
         layers =[]
         for i in range(4):
             layers.append(RefConvInsact(sizes[i], sizes[i+1], 3, 1, 0))
-        layers1 = [RefConvInsact(sizes[4], sizes[5], 1, 1, 0, False,True, False)]
+        layers.append(RefConvInsact(sizes[4], sizes[5], 1, 1, 0, False,True, False))
         
-        layers2 = [nn.AdaptiveAvgPool2d((1,1)), nn.Flatten(), nn.Linear(sizes[4], 3), nn.Sigmoid()]
-
         self.net = nn.Sequential(*layers)
-        self.depth = nn.Sequential(*layers1)
-        #self.betas = nn.Sequential(*layers2)
 
     def forward(self, x):
-        out = self.net(x)
-        depth = self.depth(out)
-        #betas = self.betas(out)
+        return self.net(x)
+    
+class Dest(nn.Module):
+    def __init__(self, out=64):
+        super().__init__()
+        sizes= [3, out, out, out, out, 1] 
+        layers =[]
+        for i in range(4):
+            layers.append(RefConvInsact(sizes[i], sizes[i+1], 3, 1, 0))
+        layers.append(RefConvInsact(sizes[4], sizes[5], 1, 1, 0, False,True, False))
+        
+        self.net = nn.Sequential(*layers)
 
-        return depth#, betas
-
+    def forward(self, x):
+        return self.net(x)
 
 class Jest(nn.Module):
     def __init__(self, out=64):
@@ -38,8 +43,6 @@ class Jest(nn.Module):
 
     def forward(self, x):
         return self.net(x)
-
-
 
 
 class RefConvInsact(nn.Module):
@@ -71,9 +74,11 @@ class Net(nn.Module):
         
         self.Tx = Test()
         self.J = Jest()
+        self.D = Dest()
 
     def forward(self, x):
-        d, betas = self.Tx(x)
+        t = self.Tx(x)
         j = self.J(x)
+        d = self.D(x)
 
-        return j, d, betas
+        return j, t, d

@@ -6,6 +6,7 @@ import torchvision.transforms.functional as TF
 from torchvision.transforms import RandomCrop
 import matplotlib.pyplot as plt
 import torchvision.transforms as transforms
+import numpy as np
 
 def get_patch(img_in, img_tar, patch_size, scale=1, ix=-1, iy=-1):
     (ih, iw) = img_in.size
@@ -91,11 +92,11 @@ class StereoData(Dataset):
         
         root = os.path.join(root, "val" if val else "train")
         self.val = val
-
+        
         self.left = os.path.join(root, "left")
         self.right = os.path.join(root, "right")
-        self.leftImagePath = list(map(lambda x: os.path.join(self.left, x), sorted(os.listdir(self.left))))
-        self.rightImagePath = list(map(lambda x: os.path.join(self.right, x), sorted(os.listdir(self.right))))
+        self.leftImagePath = np.array(list(map(lambda x: os.path.join(self.left, x), sorted(os.listdir(self.left)))))
+        self.rightImagePath = np.array(list(map(lambda x: os.path.join(self.right, x), sorted(os.listdir(self.right)))))
 
         self.patch_size = patch_size
         self.transform = transform
@@ -116,7 +117,7 @@ class StereoData(Dataset):
         return imgL, imgR
 
     def __len__(self):
-        return len(self.leftImagePath)
+        return min(len(self.leftImagePath), len(self.rightImagePath))
     
 if __name__ == "__main__":
     transform = transforms.Compose([transforms.ToTensor()])
